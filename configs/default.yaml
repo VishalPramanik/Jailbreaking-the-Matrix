@@ -1,0 +1,45 @@
+# =============================================================================
+# HMNS Default Configuration
+# =============================================================================
+# Reference: Pramanik et al. (ICLR 2026), Section 4.1, Appendix A2.1
+# =============================================================================
+
+# --- Model ---
+model:
+  name: "meta-llama/Llama-2-7b-chat-hf"
+  dtype: "bfloat16"                         # bfloat16 for forward; float32 for QR
+  device_map: "auto"
+
+# --- Attribution (Section 3, Eq. 3-4) ---
+attribution:
+  top_k: 10                                 # Global top-K heads
+  scoring: "kl"                             # "kl" | "target_logit" | "entropy"
+  proxy_preselect: true                     # Use lightweight proxy pre-selection
+  proxy_k: 30                               # Size of proxy shortlist
+
+# --- Nullspace Steering (Section 3, Eq. 5-7) ---
+nullspace:
+  ortho_tol: 1.0e-6                         # δ: orthogonality tolerance
+  max_resample: 3                            # Max resampling attempts
+  eps: 1.0e-8                               # Numerical stability constant ε
+
+# --- Intervention (Section 3, Eq. 8) ---
+intervention:
+  alpha: 0.25                               # Initial steering coefficient λ
+  alpha_schedule: "linear"                  # "linear" | "cosine" | "constant"
+  alpha_growth: 0.1                         # α_t = λ(1 + growth*(t-1))
+
+# --- Closed-Loop (Algorithm 2) ---
+loop:
+  max_attempts: 10                          # T_att: maximum iterations
+  early_stop: true                          # Stop on first success
+
+# --- Decoding (Section A2.1) ---
+decoding:
+  temperature: 0.7
+  top_p: 0.95
+  max_new_tokens: 128
+  use_cache: false                          # Disabled for correctness under masking
+
+# --- Reproducibility ---
+seed: 42

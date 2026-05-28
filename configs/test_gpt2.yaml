@@ -1,0 +1,38 @@
+# =============================================================================
+# HMNS Test Configuration (GPT-2 Small)
+# =============================================================================
+# Lightweight configuration for verifying the HMNS pipeline on a small model.
+# GPT-2 (124M) is decoder-only and available without gated access.
+# =============================================================================
+
+model:
+  name: "gpt2"
+  dtype: "float32"
+  device_map: "cpu"                         # Runs on CPU for testing
+
+attribution:
+  top_k: 4                                  # Fewer heads for speed
+  scoring: "kl"
+  proxy_preselect: false                    # Ablate all heads (only 144 total)
+  proxy_k: 20
+
+nullspace:
+  ortho_tol: 1.0e-6
+  max_resample: 3
+  eps: 1.0e-8
+
+intervention:
+  alpha: 0.25
+  alpha_schedule: "linear"
+  alpha_growth: 0.1
+
+loop:
+  max_attempts: 3                           # Fewer attempts for quick testing
+
+decoding:
+  temperature: 0.7
+  top_p: 0.95
+  max_new_tokens: 50                        # Shorter outputs for testing
+  use_cache: false
+
+seed: 42
